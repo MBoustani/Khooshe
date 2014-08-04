@@ -2,4 +2,6 @@
 Khooshe
 ======
 
-Big Data Points Visualization Tool
+Big Data-Points Visualization Tool
+
+Khooshe's Document(https://github.com/MBoustani/Khooshe/wiki) 
