@@ -4,5 +4,4 @@ Khooshe
 
 Big Data-Points Visualization Tool
 
-Khooshe's Document
-https://github.com/MBoustani/Khooshe/wiki
+[Khooshe's Document](https://github.com/MBoustani/Khooshe/wiki)
