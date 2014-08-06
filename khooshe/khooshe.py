@@ -4,6 +4,9 @@ import csv
 import numpy as np
 from scipy.cluster.vq import kmeans,vq
 
+def remove_tiles_folder():
+    if os.path.exists('tiles'):
+        shutil.rmtree('tiles')
 
 def create_folder(folder_name):
     if os.path.exists(folder_name):
@@ -44,8 +47,8 @@ def make_first_layer(unique_points, centroids_number):
         points = unique_points[idx==each]
         new_data['{0}'.format(each)] = points
         shapes.append(points.shape[0])
-    create_folder('0')
-    with open('0/0.csv','w') as csv_n:
+    create_folder('tiles/0')
+    with open('tiles/0/0.csv','w') as csv_n:
         writer = csv.writer(csv_n, delimiter=',')
         writer.writerow(['latitude', 'longitude', 'label'])
         for index, centroid in enumerate(centroids):
@@ -57,11 +60,11 @@ def make_first_layer(unique_points, centroids_number):
 def make_rest_of_layers(data, centroids, shapes, centroids_number):
     count = 1
     while True:
-        create_folder(str(count))
+        create_folder('tiles/{0}'.format(count))
         new_datas = {}
         for key in data.keys():
             if data[key].shape[0] < 10:
-                with open('{0}/{1}.csv'.format(count, key), 'w') as csv_n:
+                with open('tiles/{0}/{1}.csv'.format(count, key), 'w') as csv_n:
                     writer = csv.writer(csv_n)
                     writer.writerow(['latitude', 'longitude', 'label'])
                     for point in data[key]:
@@ -73,7 +76,7 @@ def make_rest_of_layers(data, centroids, shapes, centroids_number):
                     points = data[key][idx==each]
                     new_datas['{0}_{1}'.format(key, each)] = points
                     shapes.append(points.shape[0])
-                with open('{0}/{1}.csv'.format(count, key),'w') as csv_n:
+                with open('tiles/{0}/{1}.csv'.format(count, key),'w') as csv_n:
                     writer = csv.writer(csv_n)
                     writer.writerow(['latitude', 'longitude', 'label'])
                     for a, cent in enumerate(centroids):
@@ -89,17 +92,18 @@ def make_rest_of_layers(data, centroids, shapes, centroids_number):
 
 if __name__ == '__main__':
     CENTROIDS_NUMBER = 15
-    POINTS_FILE = 'emp_sample.csv'
+    POINTS_FILE = 'sample_points.csv'
+    remove_tiles_folder()
     points_count = get_points_count(POINTS_FILE)
     point_array = np.zeros([points_count,2])
 
     read_point_data(POINTS_FILE, point_array)
-    print "Read points --> DONE."
+    print "Reading points --> DONE."
 
     unique_points = unique_array(point_array)
-    print "Find unique points --> DONE."
+    print "Finding unique points --> DONE."
 
     centroids, shapes, new_data = make_first_layer(unique_points, CENTROIDS_NUMBER)
 
     make_rest_of_layers(new_data, centroids, shapes, CENTROIDS_NUMBER)
-    print "Create layers --> DONE."
+    print "Creating layers --> DONE."
