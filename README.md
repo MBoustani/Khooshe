@@ -2,7 +2,7 @@
 Khooshe
 ======
 
-Big Data-Points Visualization Tool
+Big GeoSptial Data Points Visualization Tool
 
 [Khooshe's Document](https://github.com/MBoustani/Khooshe/wiki)
 
