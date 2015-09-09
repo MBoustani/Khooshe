@@ -1,5 +1,6 @@
-<img src="https://github.com/MBoustani/Khooshe/blob/master/logo.png"  width="300"/>
-
+<p align="center">
+  <img src="https://github.com/MBoustani/Khooshe/blob/master/logo.png"  width="300"/>
+</p>
 Khooshe
 ======
 
