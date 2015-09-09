@@ -1,4 +1,4 @@
-<img src="https://github.com/MBoustani/Khooshe/blob/master/logo.png"  width="250"/>
+<img src="https://github.com/MBoustani/Khooshe/blob/master/logo.png"  width="300"/>
 
 Khooshe
 ======
