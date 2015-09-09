@@ -1,4 +1,5 @@
-![alt tag](https://github.com/MBoustani/Khooshe/blob/master/logo.png)
+<img src="https://github.com/MBoustani/Khooshe/blob/master/logo.png"  width="250"/>
+
 Khooshe
 ======
 
