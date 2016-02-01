@@ -7,6 +7,8 @@
     <script src="static/js/jquery-1.11.1.min.js"></script>
     <script src="static/js/bootstrap.min.js"></script>
     <script src="static/js/ol.js"></script>
+    <script src="static/js/d3.v3.min.js"></script>
+    <script src="static/js/topojson.v1.min.js"></script>
 
 </head>
 <body>
@@ -30,6 +32,12 @@ map = new ol.Map({
   target: 'map',
   view: view
 });
+
+//Checks if zoom level is changed and logs zoom levels
+map.getView().on('change:resolution', function(){
+	console.log(":::: "+map.getView().getZoom())
+});
+
 </script>
 </body>
 </html>
