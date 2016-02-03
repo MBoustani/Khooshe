@@ -36,32 +36,49 @@
 				target : 'map',
 				view : view
 			});
-
-			//Checks if zoom level is changed and logs zoom levels
+			// TODO Adjust zoom level from 0 - 12
+			// How to zoom out?
+			//Checks if zoom level is changed and logs number of features visible while zoom
 			map.getView().on('change:resolution', function() {
-				console.log(":::: " + map.getView().getZoom())
+				//console.log(":::: " + map.getView().getZoom())
+				var features = dataPointsAll['test'].getSource().getFeatures();
+				var currentExtent = map.getView().calculateExtent(map.getSize());
+				count=0
+				for( var i in features){
+					iconFeature = features[i]
+					iconFeature.getGeometry().getExtent()
+					if(iconFeature.getGeometry().intersectsExtent(map.getView().calculateExtent(map.getSize()))){
+						count++;
+						// TODO this loop can be used to determine which layer to fetch
+					}
+				}
+				console.log(count)
 			});
-			
-			var dataPointsAll={}
+
+			var dataPointsAll = {}
 			/**
 			 * Adjust size array within limits of min and max size
-			**/
-			var adjust = function(dataPoints){
-				console.log(dataPoints.map(function(point){return point.label;}) )
+			 **/
+			var adjust = function(dataPoints) {
+				//console.log(dataPoints.map(function(point){return point.label;}) )
 				//define max and min bubble size
 				var minSize = 4
 				var maxSize = 50
 				var maxMinDelta = maxSize - minSize
 				//get maximum sized point
-				maxIpSize = Math.max.apply(Math,dataPoints.map(function(point){return point.label;}))
-				
-				for (var i in dataPoints){
-					dataPoints[i].label = minSize + (maxMinDelta * (dataPoints[i].label / maxIpSize) ) 
+				maxIpSize = Math.max.apply(Math, dataPoints.map(function(point) {
+					return point.label;
+				}))
+				//adjust data points wrt max maxIpSize.
+				if (maxIpSize > maxSize){
+					for ( var i in dataPoints) {
+						dataPoints[i].label = minSize + (maxMinDelta * (dataPoints[i].label / maxIpSize))
+					}
 				}
-				console.log(dataPoints.map(function(point){return point.label;}) )
+				//console.log(dataPoints.map(function(point){return point.label;}) )
 				return dataPoints
 			}
-			
+
 			var drawPoints = function(dataPoints) {
 
 				if (!dataPoints.length || dataPoints.length == 0) {
@@ -74,8 +91,8 @@
 					var point = dataPoints[i];
 					var iconFeature = new ol.Feature({
 						geometry : new ol.geom.Point([ parseFloat(point.longitude), parseFloat(point.latitude) ]).transform(
-								'EPSG:4326', 'EPSG:3857')
-						, name : i
+								'EPSG:4326', 'EPSG:3857'),
+						name : i
 					});
 					var ccl = new ol.style.Circle({
 						radius : point.label,
@@ -85,27 +102,30 @@
 						stroke : new ol.style.Stroke({
 							color : 'silver',
 							width : 1
-					})})
+						})
+					})
 					ccl.setOpacity(0.5)
 					var iconStyle = new ol.style.Style({
 						image : ccl
-						
+
 					});
 
 					iconFeature.setStyle(iconStyle);
-					icon_feature.push(iconFeature)
+					icon_feature.push(iconFeature);
 				}
 
 				var vectorSource = new ol.source.Vector({
 					features : icon_feature
 				});
-
+				
 				var vectorLayer = new ol.layer.Vector({
 					source : vectorSource
 				});
 
 				map.addLayer(vectorLayer);
-
+				
+				dataPointsAll['test']=vectorLayer
+				
 			}
 			$.ajax({
 				type : "GET",
