@@ -42,7 +42,10 @@
 			map.getView().on('change:resolution', function() {
 				//console.log(":::: " + map.getView().getZoom())
 				var features = dataPointsAll['test'].getSource().getFeatures();
+				//current extent in lat and long format
 				var currentExtent = map.getView().calculateExtent(map.getSize());
+				currentExtent = ol.proj.transformExtent(currentExtent, 'EPSG:3857', 'EPSG:4326');
+				
 				count=0
 				for( var i in features){
 					iconFeature = features[i]
