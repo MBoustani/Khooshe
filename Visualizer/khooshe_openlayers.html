@@ -53,7 +53,7 @@
 				_map = map
 			}
 			//todo define init and move all methonds under khooshe
-			var deletePoints = function(dataPoints) {
+			var _deleteLayers = function(dataPoints) {
 				if (!dataPoints || !dataPoints.length || dataPoints.length == 0) {
 					return;
 				}
@@ -95,7 +95,8 @@
 				console.log(visible_layers)
 				//remove existing layers
 				if (visible_layers[min_layer] && visible_layers[min_layer].length != 0) {
-					deletePoints(_layerKhooshe['test'])
+					_deleteLayers(_layerKhooshe['test'])
+					_layerKhooshe['test']=[]
 				}
 				//display new layer
 				for ( var i in visible_layers[min_layer]) {
