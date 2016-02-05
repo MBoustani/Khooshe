@@ -36,33 +36,78 @@
 				target : 'map',
 				view : view
 			});
-			// TODO Adjust zoom level from 0 - 12
-			// How to zoom out?
+
+			//ALL Above will be part of app code
+
+			//Below will go in khooshe-ol.js
+			var _dict = {}
+			var _map = {}
+			var _default_layer_name = 'test'
+			var _base_dir = "static/tiles/"
+
+			/**
+			 * This variable holds Khooshe layer for all available instance.   
+			 **/
+			var _layerKhooshe = {}
+			var khooshe = function(map) {
+				_map = map
+			}
+			//todo define init and move all methonds under khooshe
+			var deletePoints = function(dataPoints) {
+				if (!dataPoints || !dataPoints.length || dataPoints.length == 0) {
+					return;
+				}
+
+				for ( var i in dataPoints) {
+					map.removeLayer(dataPoints[i]);
+				}
+			}
 			//Checks if zoom level is changed and logs number of features visible while zoom
-			map.getView().on('change:resolution', function() {
-				//console.log(":::: " + map.getView().getZoom())
-				var features = dataPointsAll['test'].getSource().getFeatures();
+			map.on('moveend', function() {
+				if (!_layerKhooshe['test']) {
+					return
+				}
+				var visible_layers = {}
+				var min_layer = 999999
 				//current extent in lat and long format
 				var currentExtent = map.getView().calculateExtent(map.getSize());
 				currentExtent = ol.proj.transformExtent(currentExtent, 'EPSG:3857', 'EPSG:4326');
-				
-				count=0
-				for( var i in features){
-					iconFeature = features[i]
-					iconFeature.getGeometry().getExtent()
-					if(iconFeature.getGeometry().intersectsExtent(map.getView().calculateExtent(map.getSize()))){
-						count++;
-						// TODO this loop can be used to determine which layer to fetch
+
+				//use dictionary to get available extents
+				for ( var i in _dict) {
+					extent = _dict[i].extent.split(',')
+					extent = extent.map(function(item) {
+						return parseFloat(item);
+					})
+					if (ol.extent.containsExtent(currentExtent, extent)) {
+						//update min layer if possible
+						if (_dict[i].folder < min_layer) {
+							min_layer = _dict[i].folder
+						}
+						//append in visible layer array
+						if (!visible_layers[_dict[i].folder]) {
+							visible_layers[_dict[i].folder] = []
+						}
+						visible_layers[_dict[i].folder].push(_dict[i].file)
 					}
 				}
-				console.log(count)
+				console.log(currentExtent)
+				console.log(visible_layers)
+				//remove existing layers
+				if (visible_layers[min_layer] && visible_layers[min_layer].length != 0) {
+					deletePoints(_layerKhooshe['test'])
+				}
+				//display new layer
+				for ( var i in visible_layers[min_layer]) {
+					_drawKhoosheLayer(min_layer, visible_layers[min_layer][i])
+				}
+
 			});
 
-			var dataPointsAll = {}
 			/**
 			 * Adjust size array within limits of min and max size
 			 **/
-			var adjust = function(dataPoints) {
+			var _adjust = function(dataPoints) {
 				//console.log(dataPoints.map(function(point){return point.label;}) )
 				//define max and min bubble size
 				var minSize = 4
@@ -73,7 +118,7 @@
 					return point.label;
 				}))
 				//adjust data points wrt max maxIpSize.
-				if (maxIpSize > maxSize){
+				if (maxIpSize > maxSize) {
 					for ( var i in dataPoints) {
 						dataPoints[i].label = minSize + (maxMinDelta * (dataPoints[i].label / maxIpSize))
 					}
@@ -82,14 +127,16 @@
 				return dataPoints
 			}
 
-			var drawPoints = function(dataPoints) {
-
+			var _drawPoints = function(dataPoints, layer) {
+				if (!layer) {
+					layer = _default_layer_name
+				}
 				if (!dataPoints.length || dataPoints.length == 0) {
 					return;
 				}
 
 				var icon_feature = [];
-				dataPoints = adjust(dataPoints)
+				dataPoints = _adjust(dataPoints)
 				for ( var i in dataPoints) {
 					var point = dataPoints[i];
 					var iconFeature = new ol.Feature({
@@ -120,23 +167,36 @@
 				var vectorSource = new ol.source.Vector({
 					features : icon_feature
 				});
-				
+
 				var vectorLayer = new ol.layer.Vector({
 					source : vectorSource
 				});
 
 				map.addLayer(vectorLayer);
-				
-				dataPointsAll['test']=vectorLayer
-				
+
+				if (!_layerKhooshe[layer]) {
+					_layerKhooshe[layer] = [];
+				}
+				_layerKhooshe[layer].push(vectorLayer)
 			}
+
+			_drawKhoosheLayer = function(folder, file) {
+				$.ajax({
+					type : "GET",
+					url : _base_dir + folder + "/" + file + ".csv",
+					dataType : "text",
+					success : function(data) {
+						_drawPoints($.csv.toObjects(data));
+					}
+				});
+			}
+			_drawKhoosheLayer(0, 0)
 			$.ajax({
 				type : "GET",
-				url : "static/tiles/0/0.csv",
+				url : _base_dir + "dict.csv",
 				dataType : "text",
 				success : function(data) {
-					drawPoints($.csv.toObjects(data));
-
+					_dict = $.csv.toObjects(data)
 				}
 			});
 		</script>

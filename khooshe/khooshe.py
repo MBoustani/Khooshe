@@ -51,12 +51,17 @@ def unique_array(point_array):
 
     return unique_a.view(a.dtype).reshape((unique_a.shape[0], a.shape[1]))
 
-
+def init_dictionary():
+    with open('tiles/dict.csv', 'w') as dic_csv:
+        writer = csv.writer(dic_csv)
+        #adding header
+        writer.writerow(['folder','file','extent'])
+        
 def make_dictionary(temp):
-    with open('tiles/dic.csv', 'a') as dic_csv:
+    with open('tiles/dict.csv', 'a') as dic_csv:
         writer = csv.writer(dic_csv)
         for each in temp:
-            writer.writerow([each[0], each[1], "({0}, {1}, {2}, {3})".format(min(each[2]), max(each[2]), min(each[3]), max(each[3]))])
+            writer.writerow([each[0], each[1], "{0}, {1}, {2}, {3}".format(min(each[2]), max(each[2]), min(each[3]), max(each[3]))])
 
 
 def make_first_layer(unique_points, centroids_number):
@@ -80,6 +85,7 @@ def make_first_layer(unique_points, centroids_number):
             temp_lat.append(centroid[0])
             temp_lon.append(centroid[1])
         temp.append([0, 0, temp_lat, temp_lon])
+    init_dictionary()
     make_dictionary(temp)
 
     return centroids, shapes, new_data
