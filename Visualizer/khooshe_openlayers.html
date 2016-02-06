@@ -27,7 +27,7 @@
 					});
 
 			var view = new ol.View({
-				center : ol.proj.transform([ -98.5, 39.76 ], 'EPSG:4326', 'EPSG:3857'),
+				center : ol.proj.transform([ 0,0 ], 'EPSG:4326', 'EPSG:3857'),
 				zoom : 2
 			});
 
@@ -43,7 +43,8 @@
 			var _dict = {}
 			var _map = {}
 			var _default_layer_name = 'test'
-			var _base_dir = "static/tiles/"
+			var _default_color = 'red'
+			var _default_base_dir = "static/tiles/"
 
 			/**
 			 * This variable holds Khooshe layer for all available instance.   
@@ -62,16 +63,16 @@
 					map.removeLayer(dataPoints[i]);
 				}
 			}
-			var _getCurrentExtent = function(){
+			/**
+			 * Returns current extent in -lon,-lat,lon,lat format 
+			**/
+			var _getCurrentExtent = function() {
 				var currentExtent = map.getView().calculateExtent(map.getSize());
 				currentExtent = ol.proj.transformExtent(currentExtent, 'EPSG:3857', 'EPSG:4326');
 				return currentExtent
 			}
-			//Checks if zoom level is changed and logs number of features visible while zoom
+			//Checks if map is changed and displayes highest level bubbles available for current display
 			map.on('moveend', function() {
-				if (!_layerKhooshe['test']) {
-					return
-				}
 				var visible_layers = {}
 				var min_layer = 999999
 				//current extent in lat and long format
@@ -100,12 +101,10 @@
 				//remove existing layers
 				if (visible_layers[min_layer] && visible_layers[min_layer].length != 0) {
 					_deleteLayers(_layerKhooshe['test'])
-					_layerKhooshe['test']=[]
+					_layerKhooshe['test'] = []
 				}
 				//display new layer
-				for ( var i in visible_layers[min_layer]) {
-					_drawKhoosheLayer(min_layer, visible_layers[min_layer][i])
-				}
+				_drawKhoosheLayer(min_layer, visible_layers[min_layer])
 
 			});
 
@@ -120,21 +119,31 @@
 				var maxMinDelta = maxSize - minSize
 				//get maximum sized point
 				maxIpSize = Math.max.apply(Math, dataPoints.map(function(point) {
-					return point.label;
+					return parseFloat(point.label);
 				}))
 				//adjust data points wrt max maxIpSize.
-				if (maxIpSize > maxSize) {
+				if (maxIpSize > maxMinDelta) {
 					for ( var i in dataPoints) {
-						dataPoints[i].label = minSize + (maxMinDelta * (dataPoints[i].label / maxIpSize))
+						dataPoints[i].label = minSize + (maxMinDelta * (dataPoints[i].label / maxIpSize));
+					}
+				} else {
+					for ( var i in dataPoints) {
+						dataPoints[i].label = minSize + parseFloat(dataPoints[i].label) ;
 					}
 				}
 				//console.log(dataPoints.map(function(point){return point.label;}) )
 				return dataPoints
 			}
 
-			var _drawPoints = function(dataPoints, layer) {
+			/**
+			 * Given khooshe points plots bubbles on a OL map
+			**/
+			var _drawPoints = function(dataPoints, layer, color) {
 				if (!layer) {
 					layer = _default_layer_name
+				}
+				if (!color) {
+					color = _default_color
 				}
 				if (!dataPoints.length || dataPoints.length == 0) {
 					return;
@@ -152,7 +161,7 @@
 					var ccl = new ol.style.Circle({
 						radius : point.label,
 						fill : new ol.style.Fill({
-							color : 'red'
+							color : color
 						}),
 						stroke : new ol.style.Stroke({
 							color : 'silver',
@@ -185,20 +194,26 @@
 				_layerKhooshe[layer].push(vectorLayer)
 			}
 
-			_drawKhoosheLayer = function(folder, file) {
-				$.ajax({
-					type : "GET",
-					url : _base_dir + folder + "/" + file + ".csv",
-					dataType : "text",
-					success : function(data) {
-						_drawPoints($.csv.toObjects(data));
-					}
-				});
+			_drawKhoosheLayer = function(folder, fileArr) {
+				var csvObjArr = []
+				for (var i in fileArr) {
+					$.ajax({
+						type : "GET",
+						url : _default_base_dir + folder + "/" + fileArr[i] + ".csv",
+						dataType : "text",
+						async: false,
+						success : function(data) {
+							csvObjArr = csvObjArr.concat($.csv.toObjects(data));
+						}
+					});	
+				}
+				_drawPoints(csvObjArr)
+				
 			}
-			_drawKhoosheLayer(0, 0)
+			_drawKhoosheLayer(0, [0])
 			$.ajax({
 				type : "GET",
-				url : _base_dir + "dict.csv",
+				url : _default_base_dir + "dict.csv",
 				dataType : "text",
 				success : function(data) {
 					_dict = $.csv.toObjects(data)
