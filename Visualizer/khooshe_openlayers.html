@@ -62,6 +62,11 @@
 					map.removeLayer(dataPoints[i]);
 				}
 			}
+			var _getCurrentExtent = function(){
+				var currentExtent = map.getView().calculateExtent(map.getSize());
+				currentExtent = ol.proj.transformExtent(currentExtent, 'EPSG:3857', 'EPSG:4326');
+				return currentExtent
+			}
 			//Checks if zoom level is changed and logs number of features visible while zoom
 			map.on('moveend', function() {
 				if (!_layerKhooshe['test']) {
@@ -70,8 +75,7 @@
 				var visible_layers = {}
 				var min_layer = 999999
 				//current extent in lat and long format
-				var currentExtent = map.getView().calculateExtent(map.getSize());
-				currentExtent = ol.proj.transformExtent(currentExtent, 'EPSG:3857', 'EPSG:4326');
+				var currentExtent = _getCurrentExtent()
 
 				//use dictionary to get available extents
 				for ( var i in _dict) {

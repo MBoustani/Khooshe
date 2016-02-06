@@ -61,7 +61,7 @@ def make_dictionary(temp):
     with open('tiles/dict.csv', 'a') as dic_csv:
         writer = csv.writer(dic_csv)
         for each in temp:
-            writer.writerow([each[0], each[1], "{0}, {1}, {2}, {3}".format(min(each[2]), max(each[2]), min(each[3]), max(each[3]))])
+            writer.writerow([each[0], each[1], "{0}, {1}, {2}, {3}".format(min(each[3]),min(each[2]),max(each[3]), max(each[2]))])
 
 
 def make_first_layer(unique_points, centroids_number):
