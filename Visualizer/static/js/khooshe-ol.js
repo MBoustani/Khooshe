@@ -1,4 +1,4 @@
-//Below will go in khooshe-ol.js
+//Below class works together with khooshe.py to draw density bubbles on OL map
 var khooshe = {
 	/**
 	 * OL map instance as provided during initialization
@@ -49,9 +49,7 @@ var khooshe = {
 	 * Adjust size array within limits of min and max size
 	 */
 	_adjust : function(dataPoints) {
-		console.log(dataPoints.map(function(point) {
-			return point.label;
-		}))
+		//console.log(dataPoints.map(function(point) {return point.label;}))
 		// define max and min bubble size
 		var minSize = 4
 		var maxSize = 50
@@ -70,9 +68,6 @@ var khooshe = {
 				dataPoints[i].label = minSize + parseFloat(dataPoints[i].label);
 			}
 		}
-		console.log(dataPoints.map(function(point) {
-			return point.label;
-		}))
 		return dataPoints
 	},
 
