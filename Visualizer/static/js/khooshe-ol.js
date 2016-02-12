@@ -197,6 +197,8 @@ var khooshe = {
 					return parseFloat(item);
 				})
 				if (ol.extent.containsExtent(currentExtent, extent)) {
+					khooshe._log('Found visible: ' + dictOfLayer[i].folder + ' / ' + dictOfLayer[i].file)
+					khooshe._log('currentExtent, visibleLayerExtent: ' + currentExtent.toString() + ' / ' + extent.toString())
 					// update min layer if possible
 					if (dictOfLayer[i].folder < min_layer) {
 						min_layer = dictOfLayer[i].folder
@@ -210,7 +212,7 @@ var khooshe = {
 			}
 			// remove existing layers
 			if (visible_layers[min_layer] && visible_layers[min_layer].length != 0) {
-				khooshe._log("resetting layers") 
+				khooshe._log("Displaying layer: " + min_layer) 
 				khooshe._deleteLayers(khooshe._layerKhooshe[baseDir])
 				khooshe._layerKhooshe[baseDir] = []
 			}else{
