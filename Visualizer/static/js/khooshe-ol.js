@@ -30,8 +30,11 @@ var khooshe = {
 	/**
 	 * delete ol.layer.Vector storing Khooshe bubbles
 	 */
-	_deleteLayers : function(layers) {
-		khooshe = this
+	deleteLayers : function(baseDir) {
+		var khooshe = this
+		var layers = khooshe._layerKhooshe[baseDir]
+		khooshe._layerKhooshe[baseDir] = []
+		
 		if (!layers || !layers.length || layers.length == 0) {
 			return;
 		}
@@ -213,8 +216,8 @@ var khooshe = {
 			// remove existing layers
 			if (visible_layers[min_layer] && visible_layers[min_layer].length != 0) {
 				khooshe._log("Displaying layer: " + min_layer) 
-				khooshe._deleteLayers(khooshe._layerKhooshe[baseDir])
-				khooshe._layerKhooshe[baseDir] = []
+				khooshe.deleteLayers(baseDir)
+				
 			}else{
 				khooshe._log("No visible layers")
 			}
