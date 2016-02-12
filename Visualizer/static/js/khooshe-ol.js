@@ -20,6 +20,12 @@ var khooshe = {
 	 * This variable holds Khooshe layer for all available instance.
 	 */
 	_layerKhooshe : {},
+	_log: function(str){
+		var DEBUG = false;
+		if(DEBUG){
+			console.log(str)
+		}
+	},
 
 	/**
 	 * delete ol.layer.Vector storing Khooshe bubbles
@@ -83,7 +89,11 @@ var khooshe = {
 		var icon_feature = [];
 		// clear p from lowest level of points
 		for ( var i in dataPoints) {
-			dataPoints[i].label = dataPoints[i].label == 'p' ? 1 : dataPoints[i].label
+			if(dataPoints[i].label == 'p'){
+				dataPoints[i].label = 1 
+				//seed is the final location in khooshe bubble
+				dataPoints[i].seed = true
+			}
 		}
 		dataPoints = khooshe._adjust(dataPoints)
 
@@ -101,8 +111,8 @@ var khooshe = {
 					color : color
 				}),
 				stroke : new ol.style.Stroke({
-					color : 'silver',
-					width : 1
+					color : point.seed?'white':'silver',
+					width : point.seed? 2:1
 				})
 			})
 			ccl.setOpacity(0.5)
@@ -156,7 +166,9 @@ var khooshe = {
 		if (!color) {
 			color = khooshe._default_color
 		}
-		khooshe._drawKhoosheLayer(0, [ 0 ], baseDir, color)
+		if(!khooshe._layerKhooshe[baseDir]){
+			khooshe._drawKhoosheLayer(0, [ 0 ], baseDir, color)
+		}
 		var dictOfLayer = null
 		$.ajax({
 			type : "GET",
@@ -198,12 +210,15 @@ var khooshe = {
 			}
 			// remove existing layers
 			if (visible_layers[min_layer] && visible_layers[min_layer].length != 0) {
+				khooshe._log("resetting layers") 
 				khooshe._deleteLayers(khooshe._layerKhooshe[baseDir])
 				khooshe._layerKhooshe[baseDir] = []
+			}else{
+				khooshe._log("No visible layers")
 			}
 			// display new layer
 			khooshe._drawKhoosheLayer(min_layer, visible_layers[min_layer], baseDir, color)
-
+			visible_layers = {}
 		});
 	}
 
