@@ -206,6 +206,8 @@ var khooshe = {
 					if (dictOfLayer[i].folder < min_layer) {
 						min_layer = dictOfLayer[i].folder
 					}
+				}
+				if (ol.extent.intersects(currentExtent, extent)) {
 					// append in visible layer array
 					if (!visible_layers[dictOfLayer[i].folder]) {
 						visible_layers[dictOfLayer[i].folder] = []
