@@ -4,8 +4,35 @@ var khooshe = {
 	 * OL map instance as provided during initialization
 	 */
 	_map : {},
-	init : function(map) {
+	init : function(map, showPopups) {
 		this._map = map
+		if(showPopups){
+			var element = $('<span></span>')[0];
+			var popup = new ol.Overlay({
+				element : element,
+				positioning : 'bottom-center',
+				stopEvent : false
+			});
+			map.addOverlay(popup);
+	
+			// display popup on hover
+			map.on('pointermove', function(evt) {
+				var feature = map.forEachFeatureAtPixel(evt.pixel, function(feature, layer) {
+					return feature;
+				});
+				if (feature) {
+					popup.setPosition(evt.coordinate);
+					$(element).popover({
+						'placement' : 'top',
+						'html' : true,
+						'content' : feature.get('popup_content')
+					});
+					$(element).popover('show');
+				} else {
+					$(element).popover('destroy');
+				}
+			});
+		}
 	},
 	/**
 	 * Dictionary holding layer extents
@@ -20,9 +47,9 @@ var khooshe = {
 	 * This variable holds Khooshe layer for all available instance.
 	 */
 	_layerKhooshe : {},
+	DEBUG : false,
 	_log: function(str){
-		var DEBUG = false;
-		if(DEBUG){
+		if(this.DEBUG){
 			console.log(str)
 		}
 	},
@@ -97,6 +124,9 @@ var khooshe = {
 				//seed is the final location in khooshe bubble
 				dataPoints[i].seed = true
 			}
+			else{
+				dataPoints[i].info=dataPoints[i].label
+			}
 		}
 		dataPoints = khooshe._adjust(dataPoints)
 
@@ -105,7 +135,7 @@ var khooshe = {
 			var iconFeature = new ol.Feature({
 				geometry : new ol.geom.Point([ parseFloat(point.longitude), parseFloat(point.latitude) ]).transform(
 						'EPSG:4326', 'EPSG:3857'),
-				name : i
+				popup_content : point.info
 			});
 			var ccl = new ol.style.Circle({
 				// radius : isNaN(point.label) ? 5 : point.label,
