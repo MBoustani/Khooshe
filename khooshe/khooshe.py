@@ -154,9 +154,9 @@ def make_rest_of_layers(data, centroids, shapes, centroids_number, tile_name):
         data = new_datas
         new_datas = 0
         count += 1
-        if data == {}:
-            break
         make_dictionary(temp, tile_name)
+        if data == {} and cluster:
+            break
 
 
 def run_khooshe(points_obj, points_file, tile_name):
