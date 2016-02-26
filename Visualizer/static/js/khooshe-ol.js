@@ -176,18 +176,21 @@ var khooshe = {
 
 	_drawKhoosheLayer : function(folder, fileArr, baseDir, color) {
 		var csvObjArr = []
+		var counter = fileArr.length
 		for ( var i in fileArr) {
 			$.ajax({
 				type : "GET",
 				url : baseDir + folder + "/" + fileArr[i] + ".csv",
 				dataType : "text",
-				async : false,
+				async : true,
 				success : function(data) {
-					csvObjArr = csvObjArr.concat($.csv.toObjects(data));
+					csvObjArr = csvObjArr.concat($.csv.toObjects(data));		
+					if(--counter == 0){
+						khooshe._drawPoints(csvObjArr, baseDir, color)
+					}
 				}
 			});
 		}
-		khooshe._drawPoints(csvObjArr, baseDir, color)
 	},
 
 	initKhoosheLayer : function(baseDir, color) {
@@ -254,7 +257,9 @@ var khooshe = {
 				khooshe._log("No visible layers")
 			}
 			// display new layer
-			khooshe._drawKhoosheLayer(min_layer, visible_layers[min_layer], baseDir, color)
+			if(min_layer != 999999){
+				khooshe._drawKhoosheLayer(min_layer, visible_layers[min_layer], baseDir, color)
+			}
 			visible_layers = {}
 		});
 	}

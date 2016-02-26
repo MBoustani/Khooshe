@@ -155,7 +155,7 @@ def make_rest_of_layers(data, centroids, shapes, centroids_number, tile_name):
         new_datas = 0
         count += 1
         make_dictionary(temp, tile_name)
-        if data == {} and cluster:
+        if data == {}:
             break
 
 
