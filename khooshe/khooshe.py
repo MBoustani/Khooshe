@@ -50,9 +50,9 @@ def read_point_data(points_file, point_array):
         reader = csv.reader(csv_f)
         try:
             for index, row in enumerate(reader):
-                point_array[index] = [float(row[0]),float(row[1])]
+               point_array[index] = [float(row[0]), float(row[1])]
         except:
-            raise error("Cannot read data from point text file.")
+            raise Exception("Cannot read data from point text file.")
     return point_array
 
 
@@ -102,7 +102,7 @@ def make_first_layer(unique_points, centroids_number, tile_name):
         temp_lat = []
         temp_lon = []
         for index, centroid in enumerate(centroids):
-            writer.writerow([centroid[0],centroid[1], shapes[index]])
+            writer.writerow([centroid[0], centroid[1], shapes[index]])
             temp_lat.append(centroid[0])
             temp_lon.append(centroid[1])
         temp.append([0, 0, temp_lat, temp_lon])
@@ -145,7 +145,7 @@ def make_rest_of_layers(data, centroids, shapes, centroids_number, tile_name):
                             writer.writerow([centroid[0], centroid[1], shapes[a]])
                             temp_lat.append(centroid[0])
                             temp_lon.append(centroid[1])
-                    if len(temp_lat) >= 1 and len(temp_lon)>= 1:
+                    if len(temp_lat) >= 1 and len(temp_lon) >= 1:
                         temp.append([count, key, temp_lat, temp_lon])
                 shapes = []
         data = 0
