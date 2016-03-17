@@ -59,6 +59,14 @@ def read_point_data(points_file):
             raise Exception("Cannot read data from point text file.")
     return tmp1, tmp2
 
+def read_point_obj(points_obj):
+    '''
+    '''
+    tmp1 = []
+    for point in points_obj:
+        tmp1.append(point[0:2])
+    return tmp1, points_obj
+
 
 def unique_array(point_array):
     '''
@@ -167,11 +175,10 @@ def run_khooshe(points_obj, points_file, tile_name):
     CENTROIDS_NUMBER = 15
     remove_tiles_folder(tile_name)
     if points_file:
-        points_count = get_points_count(points_file)
         point_array, point_array2 = read_point_data(points_file)
         print "Reading points --> DONE."
     else:
-        point_array = points_obj
+        point_array , point_array2 = read_point_obj(points_obj)
 
     point_dict = {}
     for point in point_array2:
