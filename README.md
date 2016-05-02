@@ -3,7 +3,7 @@
 </p>
 Khooshe
 ======
-Big GeoSptial Data Points Visualization Tool
+Big GeoSpatial Data Points Visualization Tool
 
 
 ## Instalation
