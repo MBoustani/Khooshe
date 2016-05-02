@@ -4,6 +4,9 @@
 Khooshe
 ======
 
+## Instalation
+`pip install Khooshe`
+
 Big GeoSptial Data Points Visualization Tool
 
 [Khooshe's Document](https://github.com/MBoustani/Khooshe/wiki)
