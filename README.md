@@ -6,10 +6,6 @@ Khooshe
 Big GeoSpatial Data Points Visualization Tool
 
 
-## Instalation
-`pip install Khooshe`
-
-
 [Khooshe's Document](https://github.com/MBoustani/Khooshe/wiki)
 
 [Demo OpenLayers](http://smadha.github.io/khooshe_openlayers.html)
